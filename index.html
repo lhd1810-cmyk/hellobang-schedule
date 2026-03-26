@@ -354,27 +354,32 @@ function checkAdmin(){
     isAdmin=true;
     sessionStorage.setItem('hb_admin','1');
     function loadFromSheet(){
-  // 구글 시트에서 스케줄 + 직원 불러오기
   const ym = curYear+'-'+pad(curMonth+1);
   fetch(SHEET_URL+'?yearMonth='+ym)
     .then(r=>r.json())
     .then(data=>{
       if(data.status==='ok'){
-        // 스케줄 데이터 반영
+        // 스케줄 데이터 - 해당 월 전체 덮어쓰기
         if(data.schedules&&data.schedules.length){
+          // 해당 월 기존 데이터 삭제
+          Object.keys(schedule).forEach(k=>{
+            if(k.startsWith(ym)) delete schedule[k];
+          });
+          // 시트 데이터로 새로 채우기
           data.schedules.forEach(s=>{
             if(!schedule[s.date])schedule[s.date]=[];
-            // 중복 방지
-            const exists=schedule[s.date].find(e=>e.name===s.staff);
-            if(!exists){
-              schedule[s.date].push({name:s.staff,status:s.status||'work',start:s.startTime||'',end:s.endTime||'',memo:s.memo||''});
-            }
+            schedule[s.date].push({
+              name:s.staff,
+              status:s.status||'work',
+              start:s.startTime||'',
+              end:s.endTime||'',
+              memo:s.memo||''
+            });
           });
           localStorage.setItem('hb_cal',JSON.stringify(schedule));
         }
-        // 직원 데이터 반영
+        // 직원 데이터 - 항상 덮어쓰기
         if(data.staffList&&data.staffList.length){
-          const offs=['일','월','화','수','목','금','토'];
           staffData = data.staffList.map(s=>({
             name:s[0]||'',
             pos:s[1]||'정규직',
@@ -406,27 +411,32 @@ function logoutAdmin(){
   isAdmin=false;
   sessionStorage.removeItem('hb_admin');
   function loadFromSheet(){
-  // 구글 시트에서 스케줄 + 직원 불러오기
   const ym = curYear+'-'+pad(curMonth+1);
   fetch(SHEET_URL+'?yearMonth='+ym)
     .then(r=>r.json())
     .then(data=>{
       if(data.status==='ok'){
-        // 스케줄 데이터 반영
+        // 스케줄 데이터 - 해당 월 전체 덮어쓰기
         if(data.schedules&&data.schedules.length){
+          // 해당 월 기존 데이터 삭제
+          Object.keys(schedule).forEach(k=>{
+            if(k.startsWith(ym)) delete schedule[k];
+          });
+          // 시트 데이터로 새로 채우기
           data.schedules.forEach(s=>{
             if(!schedule[s.date])schedule[s.date]=[];
-            // 중복 방지
-            const exists=schedule[s.date].find(e=>e.name===s.staff);
-            if(!exists){
-              schedule[s.date].push({name:s.staff,status:s.status||'work',start:s.startTime||'',end:s.endTime||'',memo:s.memo||''});
-            }
+            schedule[s.date].push({
+              name:s.staff,
+              status:s.status||'work',
+              start:s.startTime||'',
+              end:s.endTime||'',
+              memo:s.memo||''
+            });
           });
           localStorage.setItem('hb_cal',JSON.stringify(schedule));
         }
-        // 직원 데이터 반영
+        // 직원 데이터 - 항상 덮어쓰기
         if(data.staffList&&data.staffList.length){
-          const offs=['일','월','화','수','목','금','토'];
           staffData = data.staffList.map(s=>({
             name:s[0]||'',
             pos:s[1]||'정규직',
@@ -684,27 +694,32 @@ function saveStaffToSheet(){
 }
 
 function loadFromSheet(){
-  // 구글 시트에서 스케줄 + 직원 불러오기
   const ym = curYear+'-'+pad(curMonth+1);
   fetch(SHEET_URL+'?yearMonth='+ym)
     .then(r=>r.json())
     .then(data=>{
       if(data.status==='ok'){
-        // 스케줄 데이터 반영
+        // 스케줄 데이터 - 해당 월 전체 덮어쓰기
         if(data.schedules&&data.schedules.length){
+          // 해당 월 기존 데이터 삭제
+          Object.keys(schedule).forEach(k=>{
+            if(k.startsWith(ym)) delete schedule[k];
+          });
+          // 시트 데이터로 새로 채우기
           data.schedules.forEach(s=>{
             if(!schedule[s.date])schedule[s.date]=[];
-            // 중복 방지
-            const exists=schedule[s.date].find(e=>e.name===s.staff);
-            if(!exists){
-              schedule[s.date].push({name:s.staff,status:s.status||'work',start:s.startTime||'',end:s.endTime||'',memo:s.memo||''});
-            }
+            schedule[s.date].push({
+              name:s.staff,
+              status:s.status||'work',
+              start:s.startTime||'',
+              end:s.endTime||'',
+              memo:s.memo||''
+            });
           });
           localStorage.setItem('hb_cal',JSON.stringify(schedule));
         }
-        // 직원 데이터 반영
+        // 직원 데이터 - 항상 덮어쓰기
         if(data.staffList&&data.staffList.length){
-          const offs=['일','월','화','수','목','금','토'];
           staffData = data.staffList.map(s=>({
             name:s[0]||'',
             pos:s[1]||'정규직',
