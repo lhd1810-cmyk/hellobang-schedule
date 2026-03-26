@@ -395,7 +395,7 @@ function checkAdmin(){
     .catch(()=>{})
     .finally(()=>{
       renderLegend();
-      renderCal();
+      _renderCal();
     });
 }
 
@@ -452,7 +452,7 @@ function logoutAdmin(){
     .catch(()=>{})
     .finally(()=>{
       renderLegend();
-      renderCal();
+      _renderCal();
     });
 }
 
@@ -485,6 +485,13 @@ function renderLegend(){
 }
 
 function renderCal(){
+  curYear=parseInt(document.getElementById('sel-year').value);
+  curMonth=parseInt(document.getElementById('sel-month').value);
+  // 셀렉트 변경시 자동 로드
+  loadFromSheet();
+  return;
+}
+function _renderCal(){
   curYear=parseInt(document.getElementById('sel-year').value);
   curMonth=parseInt(document.getElementById('sel-month').value);
   const firstDow=new Date(curYear,curMonth,1).getDay();
@@ -592,9 +599,9 @@ function delEntry(){
   closeEntryModal();renderCal();
 }
 
-function prevMonth(){curMonth--;if(curMonth<0){curMonth=11;curYear--;}document.getElementById('sel-year').value=curYear;document.getElementById('sel-month').value=curMonth;renderCal();}
-function nextMonth(){curMonth++;if(curMonth>11){curMonth=0;curYear++;}document.getElementById('sel-year').value=curYear;document.getElementById('sel-month').value=curMonth;renderCal();}
-function goToday(){curYear=now.getFullYear();curMonth=now.getMonth();document.getElementById('sel-year').value=curYear;document.getElementById('sel-month').value=curMonth;renderCal();}
+function prevMonth(){curMonth--;if(curMonth<0){curMonth=11;curYear--;}document.getElementById('sel-year').value=curYear;document.getElementById('sel-month').value=curMonth;loadFromSheet();}
+function nextMonth(){curMonth++;if(curMonth>11){curMonth=0;curYear++;}document.getElementById('sel-year').value=curYear;document.getElementById('sel-month').value=curMonth;loadFromSheet();}
+function goToday(){curYear=now.getFullYear();curMonth=now.getMonth();document.getElementById('sel-year').value=curYear;document.getElementById('sel-month').value=curMonth;loadFromSheet();}
 
 function saveSchedule(){
   const ym=curYear+'-'+pad(curMonth+1);
@@ -735,7 +742,7 @@ function loadFromSheet(){
     .catch(()=>{})
     .finally(()=>{
       renderLegend();
-      renderCal();
+      _renderCal();
     });
 }
 
