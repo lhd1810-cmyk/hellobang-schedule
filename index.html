@@ -178,18 +178,7 @@ body{font-family:'Noto Sans KR',sans-serif;background:#f0f2f5;color:#1a1a1a;-web
 <option value="20:00">오후 8시</option>
 </select></div>
     </div>
-    <div class="field" style="margin-bottom:10px;">
-      <label>기본 휴무 요일</label>
-      <div class="off-days">
-        <label><input type="checkbox" id="off0" value="0"> 일</label>
-        <label><input type="checkbox" id="off1" value="1"> 월</label>
-        <label><input type="checkbox" id="off2" value="2"> 화</label>
-        <label><input type="checkbox" id="off3" value="3"> 수</label>
-        <label><input type="checkbox" id="off4" value="4"> 목</label>
-        <label><input type="checkbox" id="off5" value="5"> 금</label>
-        <label><input type="checkbox" id="off6" value="6"> 토</label>
-      </div>
-    </div>
+
     <div class="field" style="margin-bottom:10px;">
       <label>색상</label>
       <select id="ns-color">
@@ -297,18 +286,7 @@ body{font-family:'Noto Sans KR',sans-serif;background:#f0f2f5;color:#1a1a1a;-web
 <option value="20:00">오후 8시</option>
 </select>
     </div>
-    <div class="field" style="margin-bottom:4px;">
-      <label>기본 휴무 요일</label>
-      <div class="off-days" style="margin-top:6px;">
-        <label><input type="checkbox" id="se-off0" value="0"> 일</label>
-        <label><input type="checkbox" id="se-off1" value="1"> 월</label>
-        <label><input type="checkbox" id="se-off2" value="2"> 화</label>
-        <label><input type="checkbox" id="se-off3" value="3"> 수</label>
-        <label><input type="checkbox" id="se-off4" value="4"> 목</label>
-        <label><input type="checkbox" id="se-off5" value="5"> 금</label>
-        <label><input type="checkbox" id="se-off6" value="6"> 토</label>
-      </div>
-    </div>
+
     <input type="hidden" id="se-idx"/>
     <div class="modal-btns">
       <button class="modal-no" onclick="closeStaffEdit()">취소</button>
@@ -545,12 +523,10 @@ function saveSchedule(){
 // 직원관리
 function renderStaffList(){
   const el=document.getElementById('staff-list');
-  const offs=['일','월','화','수','목','금','토'];
   if(!staffData.length){el.innerHTML='<div style="color:#6B7280;font-size:13px;text-align:center;padding:16px;">등록된 직원이 없습니다.</div>';return;}
   el.innerHTML=staffData.map((s,i)=>{
     const [bg,tc]=(s.color||'#F3F4F6|#374151').split('|');
     const timeStr=s.start&&s.end?s.start+'~'+s.end:'시간 미설정';
-    const offStr=s.offDays&&s.offDays.length?s.offDays.map(d=>offs[d]).join(', '):'없음';
     return `<div class="staff-card">
       <div class="staff-card-top">
         <div style="display:flex;align-items:center;gap:8px;">
@@ -564,7 +540,6 @@ function renderStaffList(){
       </div>
       <div class="staff-card-info">
         <span>⏰ ${timeStr}</span>
-        <span>🚫 휴무: ${offStr}</span>
       </div>
     </div>`;
   }).join('');
@@ -575,11 +550,11 @@ function addStaff(){
   const name=document.getElementById('ns-name').value.trim();
   if(!name){alert('이름을 입력해주세요.');return;}
   if(staffData.find(s=>s.name===name)){alert('이미 같은 이름의 직원이 있어요.');return;}
-  const offDays=[0,1,2,3,4,5,6].filter(i=>document.getElementById('off'+i).checked);
+  const offDays=[];
   staffData.push({name,pos:document.getElementById('ns-pos').value,start:document.getElementById('ns-start').value,end:document.getElementById('ns-end').value,offDays,color:document.getElementById('ns-color').value});
   localStorage.setItem('hb_staff_v3',JSON.stringify(staffData));
   document.getElementById('ns-name').value='';
-  [0,1,2,3,4,5,6].forEach(i=>document.getElementById('off'+i).checked=false);
+  
   renderStaffList();renderLegend();
   alert('✓ '+name+' 직원이 추가됐어요!');
 }
@@ -598,9 +573,7 @@ function openStaffEdit(idx){
   document.getElementById('se-title').textContent='✏️ '+s.name+' 정보 수정';
   document.getElementById('se-start').value=s.start||'';
   document.getElementById('se-end').value=s.end||'';
-  [0,1,2,3,4,5,6].forEach(i=>{
-    document.getElementById('se-off'+i).checked=(s.offDays||[]).includes(i);
-  });
+
   document.getElementById('se-idx').value=idx;
   document.getElementById('staff-edit-modal').classList.add('show');
 }
@@ -611,7 +584,6 @@ function saveStaffEdit(){
   const idx=parseInt(document.getElementById('se-idx').value);
   staffData[idx].start=document.getElementById('se-start').value;
   staffData[idx].end=document.getElementById('se-end').value;
-  staffData[idx].offDays=[0,1,2,3,4,5,6].filter(i=>document.getElementById('se-off'+i).checked);
   localStorage.setItem('hb_staff_v3',JSON.stringify(staffData));
   closeStaffEdit();renderStaffList();
   alert('✓ 수정됐어요!');
