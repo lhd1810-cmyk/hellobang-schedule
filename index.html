@@ -353,7 +353,48 @@ function checkAdmin(){
   if(pw==='1023'){
     isAdmin=true;
     sessionStorage.setItem('hb_admin','1');
-    updateAdminUI();
+    function loadFromSheet(){
+  // 구글 시트에서 스케줄 + 직원 불러오기
+  const ym = curYear+'-'+pad(curMonth+1);
+  fetch(SHEET_URL+'?yearMonth='+ym)
+    .then(r=>r.json())
+    .then(data=>{
+      if(data.status==='ok'){
+        // 스케줄 데이터 반영
+        if(data.schedules&&data.schedules.length){
+          data.schedules.forEach(s=>{
+            if(!schedule[s.date])schedule[s.date]=[];
+            // 중복 방지
+            const exists=schedule[s.date].find(e=>e.name===s.staff);
+            if(!exists){
+              schedule[s.date].push({name:s.staff,status:s.status||'work',start:s.startTime||'',end:s.endTime||'',memo:s.memo||''});
+            }
+          });
+          localStorage.setItem('hb_cal',JSON.stringify(schedule));
+        }
+        // 직원 데이터 반영
+        if(data.staffList&&data.staffList.length){
+          const offs=['일','월','화','수','목','금','토'];
+          staffData = data.staffList.map(s=>({
+            name:s[0]||'',
+            pos:s[1]||'정규직',
+            start:s[2]||'',
+            end:s[3]||'',
+            offDays:(s[4]?String(s[4]).split(',').filter(v=>v!=='').map(Number):[]),
+            color:s[5]||'#F3F4F6|#374151'
+          }));
+          localStorage.setItem('hb_staff_v3',JSON.stringify(staffData));
+        }
+      }
+    })
+    .catch(()=>{})
+    .finally(()=>{
+      renderLegend();
+      renderCal();
+    });
+}
+
+updateAdminUI();
     return true;
   } else if(pw!==null){
     alert('비밀번호가 틀렸습니다.');
@@ -364,7 +405,48 @@ function checkAdmin(){
 function logoutAdmin(){
   isAdmin=false;
   sessionStorage.removeItem('hb_admin');
-  updateAdminUI();
+  function loadFromSheet(){
+  // 구글 시트에서 스케줄 + 직원 불러오기
+  const ym = curYear+'-'+pad(curMonth+1);
+  fetch(SHEET_URL+'?yearMonth='+ym)
+    .then(r=>r.json())
+    .then(data=>{
+      if(data.status==='ok'){
+        // 스케줄 데이터 반영
+        if(data.schedules&&data.schedules.length){
+          data.schedules.forEach(s=>{
+            if(!schedule[s.date])schedule[s.date]=[];
+            // 중복 방지
+            const exists=schedule[s.date].find(e=>e.name===s.staff);
+            if(!exists){
+              schedule[s.date].push({name:s.staff,status:s.status||'work',start:s.startTime||'',end:s.endTime||'',memo:s.memo||''});
+            }
+          });
+          localStorage.setItem('hb_cal',JSON.stringify(schedule));
+        }
+        // 직원 데이터 반영
+        if(data.staffList&&data.staffList.length){
+          const offs=['일','월','화','수','목','금','토'];
+          staffData = data.staffList.map(s=>({
+            name:s[0]||'',
+            pos:s[1]||'정규직',
+            start:s[2]||'',
+            end:s[3]||'',
+            offDays:(s[4]?String(s[4]).split(',').filter(v=>v!=='').map(Number):[]),
+            color:s[5]||'#F3F4F6|#374151'
+          }));
+          localStorage.setItem('hb_staff_v3',JSON.stringify(staffData));
+        }
+      }
+    })
+    .catch(()=>{})
+    .finally(()=>{
+      renderLegend();
+      renderCal();
+    });
+}
+
+updateAdminUI();
   alert('로그아웃됐어요.');
 }
 
@@ -601,9 +683,50 @@ function saveStaffToSheet(){
     .finally(()=>setTimeout(()=>msgEl.textContent='',3000));
 }
 
+function loadFromSheet(){
+  // 구글 시트에서 스케줄 + 직원 불러오기
+  const ym = curYear+'-'+pad(curMonth+1);
+  fetch(SHEET_URL+'?yearMonth='+ym)
+    .then(r=>r.json())
+    .then(data=>{
+      if(data.status==='ok'){
+        // 스케줄 데이터 반영
+        if(data.schedules&&data.schedules.length){
+          data.schedules.forEach(s=>{
+            if(!schedule[s.date])schedule[s.date]=[];
+            // 중복 방지
+            const exists=schedule[s.date].find(e=>e.name===s.staff);
+            if(!exists){
+              schedule[s.date].push({name:s.staff,status:s.status||'work',start:s.startTime||'',end:s.endTime||'',memo:s.memo||''});
+            }
+          });
+          localStorage.setItem('hb_cal',JSON.stringify(schedule));
+        }
+        // 직원 데이터 반영
+        if(data.staffList&&data.staffList.length){
+          const offs=['일','월','화','수','목','금','토'];
+          staffData = data.staffList.map(s=>({
+            name:s[0]||'',
+            pos:s[1]||'정규직',
+            start:s[2]||'',
+            end:s[3]||'',
+            offDays:(s[4]?String(s[4]).split(',').filter(v=>v!=='').map(Number):[]),
+            color:s[5]||'#F3F4F6|#374151'
+          }));
+          localStorage.setItem('hb_staff_v3',JSON.stringify(staffData));
+        }
+      }
+    })
+    .catch(()=>{})
+    .finally(()=>{
+      renderLegend();
+      renderCal();
+    });
+}
+
 updateAdminUI();
 renderLegend();
-renderCal();
+loadFromSheet();
 </script>
 </body>
 </html>
